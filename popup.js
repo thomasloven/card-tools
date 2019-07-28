@@ -6,7 +6,8 @@ import "./card-maker.js"
 
 export function closePopUp() {
   const moreInfoEl = document.querySelector("home-assistant")._moreInfoEl;
-  moreInfoEl.close();
+  if(moreInfoEl)
+    moreInfoEl.close();
 }
 
 export function popUp(title, card, large=false, style=null, fullscreen=false) {
@@ -69,7 +70,10 @@ export function popUp(title, card, large=false, style=null, fullscreen=false) {
         clearInterval(interval);
         wrapper.parentNode.removeChild(wrapper);
         for (var k in oldStyle)
-          moreInfoEl.style.setProperty(k, oldStyle[k]);
+          if (oldStyle[k])
+            moreInfoEl.style.setProperty(k, oldStyle[k]);
+          else
+            moreInfoEl.style.removeProperty(k);
       }
     }, 100);
   }, 1000);
