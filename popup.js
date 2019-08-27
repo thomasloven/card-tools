@@ -26,6 +26,10 @@ export function popUp(title, card, large=false, style=null, fullscreen=false) {
       color: var(--more-info-header-color);
       background-color: var(--more-info-header-background);
     }
+    .scrollable {
+      overflow: auto;
+      max-width: 100% !important;
+    }
   </style>
   `;
 
@@ -40,7 +44,8 @@ export function popUp(title, card, large=false, style=null, fullscreen=false) {
     </div>
   `;
 
-  const scroll = document.createElement("paper-dialog-scrollable");
+  const scroll = document.createElement("div");
+  scroll.classList.add('scrollable');
   scroll.appendChild(content);
 
   if(!fullscreen) {
@@ -49,12 +54,10 @@ export function popUp(title, card, large=false, style=null, fullscreen=false) {
   wrapper.appendChild(scroll);
 
   const moreInfoEl = document.querySelector("home-assistant")._moreInfoEl;
-  scroll.dialogElement = moreInfoEl;
+  moreInfoEl.sizingTarget = scroll;
   moreInfoEl.large = large;
   moreInfoEl._page = "none";
   moreInfoEl.shadowRoot.appendChild(wrapper);
-
-  scroll.shadowRoot.querySelector("#scrollable").style.setProperty('padding', '0');
 
   let oldStyle = {};
   if(style) {
