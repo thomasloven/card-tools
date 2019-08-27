@@ -17,4 +17,27 @@ export async function parseTemplate(hass, str, specialData = {}) {
     }
 
     return hass.callApi("POST", "template", {template: str});
-}
+};
+
+export async function subscribeRenderTemplate(conn, onChange, params) {
+  // params = {template, entity_ids, variables}
+  if(!conn)
+    conn = hass().connection;
+  let variables = {
+    user: hass().user.name,
+    browser: deviceID,
+    hash: location.hash.substr(1) || ' ',
+    ...params.variables,
+  };
+  let template = params.template;
+  let entity_ids = params.entity_ids;
+
+  return conn.subscribeMessage(
+    (msg) => onChange(msg.result),
+    { type: "render_template",
+      template,
+      variables,
+      entity_ids,
+    }
+  );
+};
