@@ -19,7 +19,7 @@ export async function parseTemplate(hass, str, specialData = {}) {
     return hass.callApi("POST", "template", {template: str});
 };
 
-export async function subscribeRenderTemplate(conn, onChange, params) {
+export function subscribeRenderTemplate(conn, onChange, params) {
   // params = {template, entity_ids, variables}
   if(!conn)
     conn = hass().connection;
