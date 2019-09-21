@@ -6,7 +6,6 @@ export const DOMAINS_HIDE_MORE_INFO = [
   "input_number",
   "input_select",
   "input_text",
-  "input_datetime",
   "scene",
   "weblink",
 ];
