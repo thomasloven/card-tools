@@ -54,6 +54,7 @@ export function popUp(title, card, large=false, style=null, fullscreen=false) {
   wrapper.appendChild(scroll);
 
   const moreInfoEl = document.querySelector("home-assistant")._moreInfoEl;
+  if(moreInfoEl._closer) moreInfoEl._closer();
   moreInfoEl.sizingTarget = scroll;
   moreInfoEl.large = large;
   moreInfoEl._page = "none";
@@ -67,16 +68,21 @@ export function popUp(title, card, large=false, style=null, fullscreen=false) {
     }
   }
 
+  moreInfoEl._closer = function() {
+    wrapper.parentNode.removeChild(wrapper);
+    for (var k in oldStyle)
+      if (oldStyle[k])
+        moreInfoEl.style.setProperty(k, oldStyle[k]);
+      else
+        moreInfoEl.style.removeProperty(k);
+    moreInfoEl._closer = null;
+  }
+
   setTimeout(() => {
     let interval = setInterval(() => {
       if (moreInfoEl.getAttribute("aria-hidden")) {
         clearInterval(interval);
-        wrapper.parentNode.removeChild(wrapper);
-        for (var k in oldStyle)
-          if (oldStyle[k])
-            moreInfoEl.style.setProperty(k, oldStyle[k]);
-          else
-            moreInfoEl.style.removeProperty(k);
+        if(moreInfoEl._closer) moreInfoEl._closer();
       }
     }, 100);
   }, 1000);
