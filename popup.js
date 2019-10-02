@@ -12,12 +12,13 @@ export function closePopUp() {
 
 export function popUp(title, card, large=false, style=null, fullscreen=false) {
 
-  const dummy_entity = Object.keys(hass().states)[0];
-  moreInfo(dummy_entity);
-
-  const content = document.createElement("card-maker")
-  content.noHass = true;
-  content.config = card;
+  // Force _moreInfoEl to be loaded
+  fireEvent("hass-more-info", {entityId: null});
+  const moreInfoEl = document.querySelector("home-assistant")._moreInfoEl;
+  // Close and reopen to clear any previous styling
+  // Necessary for popups from popups
+  moreInfoEl.close();
+  moreInfoEl.open();
 
   const wrapper = document.createElement("div");
   wrapper.innerHTML = `
@@ -31,60 +32,63 @@ export function popUp(title, card, large=false, style=null, fullscreen=false) {
       max-width: 100% !important;
     }
   </style>
-  `;
-
-  const header = document.createElement("app-toolbar");
-  header.innerHTML = `
-  <paper-icon-button
-    icon="hass:close"
-    dialog-dismiss=""
-  ></paper-icon-button>
-  <div class="main-title" main-title="">
-    ${title}
+  ${fullscreen
+    ? ``
+    : `
+      <app-toolbar>
+        <paper-icon-button
+          icon="hass:close"
+          dialog-dismiss=""
+        ></paper-icon-button>
+        <div class="main-title" main-title="">
+          ${title}
+        </div>
+      </app-toolbar>
+      `
+    }
+    <div class="scrollable">
+      <card-maker nohass>
+      </card-maker>
     </div>
   `;
 
-  const scroll = document.createElement("div");
-  scroll.classList.add('scrollable');
-  scroll.appendChild(content);
+  const scroll = wrapper.querySelector(".scrollable");
+  const content = scroll.querySelector("card-maker");
+  content.config = card;
 
-  if(!fullscreen) {
-    wrapper.appendChild(header);
-  }
-  wrapper.appendChild(scroll);
-
-  const moreInfoEl = document.querySelector("home-assistant")._moreInfoEl;
-  if(moreInfoEl._closer) moreInfoEl._closer();
   moreInfoEl.sizingTarget = scroll;
   moreInfoEl.large = large;
-  moreInfoEl._page = "none";
+  moreInfoEl._page = "none"; // Display nothing by default
   moreInfoEl.shadowRoot.appendChild(wrapper);
 
   let oldStyle = {};
   if(style) {
+    moreInfoEl.resetFit(); // Reset positioning to enable setting it via css
     for (var k in style) {
       oldStyle[k] = moreInfoEl.style[k];
       moreInfoEl.style.setProperty(k, style[k]);
     }
   }
 
-  moreInfoEl._closer = function() {
-    wrapper.parentNode.removeChild(wrapper);
-    for (var k in oldStyle)
-      if (oldStyle[k])
-        moreInfoEl.style.setProperty(k, oldStyle[k]);
-      else
-        moreInfoEl.style.removeProperty(k);
-    moreInfoEl._closer = null;
+  moreInfoEl._dialogOpenChanged = function(newVal) {
+    if (!newVal) {
+      if(this.stateObj)
+        this.fire("hass-more-info", {entityId: null});
+
+      if (this.shadowRoot == wrapper.parentNode) {
+        this._page = null;
+        this.shadowRoot.removeChild(wrapper);
+        if(style) {
+          moreInfoEl.resetFit();
+          for (var k in oldStyle)
+            if (oldStyle[k])
+              moreInfoEl.style.setProperty(k, oldStyle[k]);
+            else
+              moreInfoEl.style.removeProperty(k);
+        }
+      }
+    }
   }
 
-  setTimeout(() => {
-    let interval = setInterval(() => {
-      if (moreInfoEl.getAttribute("aria-hidden")) {
-        clearInterval(interval);
-        if(moreInfoEl._closer) moreInfoEl._closer();
-      }
-    }, 100);
-  }, 1000);
   return moreInfoEl;
 }

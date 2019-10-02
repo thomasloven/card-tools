@@ -7,6 +7,7 @@ class ThingMaker extends LitElement {
     return {
       'hass': {},
       'config': {},
+      'noHass': {type: Boolean },
     };
   }
   setConfig(config) {
