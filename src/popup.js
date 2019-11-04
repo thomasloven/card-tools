@@ -5,7 +5,7 @@ import { moreInfo } from "./more-info.js";
 import "./card-maker.js"
 
 export function closePopUp() {
-  const moreInfoEl = document.querySelector("home-assistant")._moreInfoEl;
+  const moreInfoEl = document.querySelector("home-assistant") && document.querySelector("home-assistant")._moreInfoEl;
   if(moreInfoEl)
     moreInfoEl.close();
 }
