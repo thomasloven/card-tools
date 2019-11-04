@@ -34,7 +34,7 @@ There are two ways you can get access to the card-tools functions.
   Add the package as a dependency
 
 ```bash
-> npm install --save thomasloven/lovelace-card-tools
+> npm install thomasloven/lovelace-card-tools
 ```
 
   And then import the parts you want
@@ -105,11 +105,11 @@ This is provided for plugins that *aren't* cards, elements or entity rows. For t
   greeting.innerHTML = `Hi there, ${cardTools.hass.user.name}`;
   cardTools.hass.connection.subscribeEvents((event) => {console.log("A service was called in Home Assistant")}, 'call-service');
 ```
-** Note that this is called as a function if imported, but is a direct property of the cardTools element. **
+**Note that this is called as a function if imported, but is a direct property of the cardTools element.**
 
 ### `lovelace()` / `cardTools.lovelace`
-This object contains information about the users lovelace configuration. As a bonus `lovelace().current_view` contains the index of the currently displayed view.
-** Note that this is called as a function if imported, but is a direct property of the cardTools element. **
+This object contains information about the users lovelace configuration. As a bonus `lovelace().current_view` contains the index of the currently displayed view.  
+**Note that this is called as a function if imported, but is a direct property of the cardTools element.**
 
 ### `lovelace_view()` / `cardTools.lovelace_view()`
 Return a reference to the lovelace view object.
@@ -148,8 +148,8 @@ render() {
     </div>`;
 }
 
-firstUpdates() {
-  longpress(this.shadowRoot.querySelector("#my-clickable-div"));
+firstUpdated() {
+  bindActionHandler(this.shadowRoot.querySelector("#my-clickable-div"), {hasHold: true, hasDoubleClick: true});
 }
 ```
 

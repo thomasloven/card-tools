@@ -1,4 +1,4 @@
-export function bindActionHandler(element, options) {
+export function bindActionHandler(element, options={}) {
   customElements.whenDefined("long-press").then(() => {
     const longpress = document.body.querySelector("long-press");
     longpress.bind(element);
