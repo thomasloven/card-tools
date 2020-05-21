@@ -36,10 +36,11 @@ export function popUp(title, card, large=false, style=null, fullscreen=false) {
     ? ``
     : `
       <app-toolbar>
-        <paper-icon-button
+        <ha-icon-button
           icon="hass:close"
           dialog-dismiss=""
-        ></paper-icon-button>
+          aria-label="Dismiss dialog"
+        ><mwc-icon-button><ha-icon></ha-icon></mwc-icon-button></ha-icon-button>
         <div class="main-title" main-title="">
           ${title}
         </div>
